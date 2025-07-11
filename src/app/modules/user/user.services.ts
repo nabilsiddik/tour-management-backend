@@ -25,8 +25,20 @@ const getAllUsers = async() => {
   }
 }
 
+// Update user
+const updateUser = async(payload: Partial<IUser>) => {
+  const updatedData = payload
+  const {email} = payload
+  const updateUser = User.findByIdAndUpdate(email, updatedData)
+
+  return {
+    data: updateUser
+  }
+}
+
 
 export const userServices = {
     createUser,
-    getAllUsers
+    getAllUsers,
+    updateUser
 }

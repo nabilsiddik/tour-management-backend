@@ -16,12 +16,6 @@ const catchAsync = (fn: AsyncHandler) => (req: Request, res: Response, next: Nex
 const createUser = catchAsync(async(req: Request, res: Response, next: NextFunction)=> {
   const user = await userServices.createUser(req.body);
 
-    // res.status(statusCode.CREATED).json({
-    //   success: true,
-    //   message: "User created successfully.",
-    //   data: user,
-    // });
-
     sendResponse(res, {
       statusCode: statusCode.CREATED,
       success: true,
@@ -42,7 +36,20 @@ const getAllUsers = catchAsync(async(req: Request, res: Response, next: NextFunc
     })
 })
 
+const updateUser = catchAsync(async(req: Request, res: Response, next: NextFunction)=> {
+  const updatedUser = await userServices.updateUser(req.body);
+
+    sendResponse(res, {
+      statusCode: statusCode.OK,
+      success: true,
+      message: 'User Updated Successfully',
+      data: updatedUser
+    })
+})
+
+
 export const userControllers = {
   createUser,
   getAllUsers,
+  updateUser
 };
