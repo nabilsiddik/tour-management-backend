@@ -6,7 +6,7 @@ import { sendResponse } from "../../utils/userResponse";
 
 type AsyncHandler = (req: Request, res: Response, next: NextFunction) => Promise<void>
 
-const catchAsync = (fn: AsyncHandler) => (req: Request, res: Response, next: NextFunction) => {
+export const catchAsync = (fn: AsyncHandler) => (req: Request, res: Response, next: NextFunction) => {
   Promise.resolve(fn(req, res, next)).catch((err: any)=>{
     console.log(err)
     next(err)
