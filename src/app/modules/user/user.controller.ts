@@ -2,7 +2,8 @@ import { NextFunction, Request, Response } from "express";
 import statusCode from "http-status-codes";
 import { userServices } from "./user.services";
 import { sendResponse } from "../../utils/userResponse";
-// import AppError from "../../errorHelpers/appError";
+import { envVars } from "../../config/env";
+import { JwtPayload, verify } from "jsonwebtoken";
 
 type AsyncHandler = (req: Request, res: Response, next: NextFunction) => Promise<void>
 
@@ -37,7 +38,14 @@ const getAllUsers = catchAsync(async(req: Request, res: Response, next: NextFunc
 })
 
 const updateUser = catchAsync(async(req: Request, res: Response, next: NextFunction)=> {
-  const updatedUser = await userServices.updateUser(req.body);
+
+  const userId = req.params.id
+  const payload = req.body
+
+  const token = req.headers.authorization
+  const verifiedToken = verify(token as string, envVars.JWT_ACCESS_SECRET) as JwtPayload
+
+  const updatedUser = await userServices.updateUser(userId, payload, verifiedToken);
 
     sendResponse(res, {
       statusCode: statusCode.OK,

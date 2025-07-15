@@ -10,10 +10,6 @@ const moduleRoutes = [
         route: userRouter
     },
     {
-        path: '/all-user',
-        route: userRouter
-    },
-    {
         path: '/auth',
         route: authRouter
     }

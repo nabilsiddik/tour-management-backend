@@ -12,15 +12,15 @@ userRouter.post(
   validateRequest(createUserZodSchema),
   userControllers.createUser
 );
-userRouter.put(
-  "/:id",
-  validateRequest(updateUserZodSchema),
-  userControllers.updateUser
-);
 userRouter.get(
   "/all-user",
   checkAuth(Role.ADMIN, Role.SUPER_ADMIN),
   userControllers.getAllUsers
 );
+userRouter.patch(
+  "/:id",
+  checkAuth(...Object.values(Role)),
+  userControllers.updateUser
+)
 
 export default userRouter;

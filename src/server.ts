@@ -3,6 +3,7 @@ let server: Server;
 import mongoose from "mongoose";
 import dotenv from "dotenv";
 import app from "./app";
+import { seedSuperAdmin } from "./app/utils/seedSuperAdmin";
 dotenv.config();
 const port = process.env.PORT || 5000;
 
@@ -20,54 +21,57 @@ const startServer = async () => {
   }
 };
 
-startServer();
+(async () => {
+  await startServer();
+  await seedSuperAdmin();
+})();
 
 // Unhandled rejection error
-process.on("unhandledRejection", (err)=> {
-    console.log("Unhandled Rejection detected. Server shutting down ...", err)
+process.on("unhandledRejection", (err) => {
+  console.log("Unhandled Rejection detected. Server shutting down ...", err);
 
-    if(server){
-        server.close(()=>{
-            process.exit()
-        })
-    }
-    process.exit()
-})
+  if (server) {
+    server.close(() => {
+      process.exit();
+    });
+  }
+  process.exit();
+});
 
 // Uncaught exception error
-process.on("uncaughtException", (err)=> {
-    console.log("uncaught Exception detected. Server shutting down ...", err)
+process.on("uncaughtException", (err) => {
+  console.log("uncaught Exception detected. Server shutting down ...", err);
 
-    if(server){
-        server.close(()=>{
-            process.exit()
-        })
-    }
-    process.exit()
-})
+  if (server) {
+    server.close(() => {
+      process.exit();
+    });
+  }
+  process.exit();
+});
 
 // Signal termination error
-process.on("SIGTERM", (err)=> {
-    console.log("Sigterm signal received... Server shutting down ...", err)
+process.on("SIGTERM", (err) => {
+  console.log("Sigterm signal received... Server shutting down ...", err);
 
-    if(server){
-        server.close(()=>{
-            process.exit()
-        })
-    }
-    process.exit()
-})
+  if (server) {
+    server.close(() => {
+      process.exit();
+    });
+  }
+  process.exit();
+});
 
-process.on("SIGINT", (err)=> {
-    console.log("SIGINT signal received... Server shutting down ...", err)
+process.on("SIGINT", (err) => {
+  console.log("SIGINT signal received... Server shutting down ...", err);
 
-    if(server){
-        server.close(()=>{
-            process.exit()
-        })
-    }
-    process.exit()
-})
+  if (server) {
+    server.close(() => {
+      process.exit();
+    });
+  }
+  process.exit();
+});
 
 // Promise.reject(new Error("I forgot to catch this promise"))
 // throw new Error('I forgot to handle this local error')
