@@ -6,6 +6,7 @@ import { authServices } from "./auth.service";
 import AppError from "../../errorHelpers/appError";
 import { createUserTokens } from "../../utils/userTokens";
 import { setAuthCookie } from "../../utils/setCookie";
+import { JwtPayload } from "jsonwebtoken";
 
 const credentialLogin = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
@@ -22,6 +23,33 @@ const credentialLogin = catchAsync(
     });
   }
 );
+
+
+// Logout 
+const logOut = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+
+    res.clearCookie('accessToken', {
+      httpOnly: true,
+      secure: false,
+      sameSite: 'lax'
+    })
+
+    res.clearCookie('refreshToken', {
+      httpOnly: true,
+      secure: false,
+      sameSite: 'lax'
+    })
+
+    sendResponse(res, {
+      statusCode: statusCodes.OK,
+      success: true,
+      message: "User loged out successfull",
+      data: null,
+    });
+  }
+);
+
 
 const getNewAccessToken = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
@@ -40,12 +68,34 @@ const getNewAccessToken = catchAsync(
       httpOnly: true,
       secure: false
     })
+    setAuthCookie(res, tokenInfo)
+
 
     sendResponse(res, {
       statusCode: statusCodes.OK,
       success: true,
       message: "New Access token created successfull",
       data: tokenInfo,
+    });
+  }
+);
+
+
+
+const resetPassword = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const decodedToken = req.user
+    console.log('dec token from controller', decodedToken)
+    const oldPassword = req.body.oldPassword
+    const newPassword = req.body.newPassword
+
+    const resetPassword = await authServices.resetPassword(oldPassword, newPassword, decodedToken as JwtPayload)
+
+    sendResponse(res, {
+      statusCode: statusCodes.OK,
+      success: true,
+      message: "Password Reseted Successfully",
+      data: resetPassword,
     });
   }
 );
@@ -69,4 +119,6 @@ export const authControllers = {
   credentialLogin,
   getNewAccessToken,
   googleCallback,
+  logOut,
+  resetPassword
 };
