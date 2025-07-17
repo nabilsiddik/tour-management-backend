@@ -10,9 +10,10 @@ authRouter.post('/login', authControllers.credentialLogin)
 authRouter.post('/logout', authControllers.logOut)
 authRouter.post('/refresh-token', authControllers.getNewAccessToken)
 authRouter.post('/reset-password', checkAuth(...Object.values(Role)), authControllers.resetPassword)
-// authRouter.get('/google', async(req: Request, res: Response, next: NextFunction) => {
-//     passport.authenticate('google', {scope: ["profile", "email"]})(req, res)
-// })
-// authRouter.get('/google/callback', authControllers.googleCallback)
+authRouter.get('/google', async(req: Request, res: Response, next: NextFunction) => {
+    const redirect = req.query.redirect || ""
+    passport.authenticate('google', {scope: ["profile", "email"], state: redirect as string})(req, res, next)
+})
+authRouter.get('/google/callback', passport.authenticate("google", {failureRedirect: '/login'}), authControllers.googleCallback)
 
 export default authRouter 

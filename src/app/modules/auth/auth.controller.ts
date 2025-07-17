@@ -7,39 +7,57 @@ import AppError from "../../errorHelpers/appError";
 import { createUserTokens } from "../../utils/userTokens";
 import { setAuthCookie } from "../../utils/setCookie";
 import { JwtPayload } from "jsonwebtoken";
+import { envVars } from "../../config/env";
+import passport from "passport";
 
 const credentialLogin = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
-    const loginInfo = await authServices.credentialLogin(req.body);
+    // const loginInfo = await authServices.credentialLogin(req.body);
+    passport.authenticate("local", async (error: any, user: any, info: any) => {
+      if (error) {
+        return new AppError(401, error);
+      }
 
-    // Set Access Token or Refresh Token
-    setAuthCookie(res, loginInfo)
+      if (!user) {
+        return new AppError(401, info.message);
+      }
 
-    sendResponse(res, {
-      statusCode: statusCodes.OK,
-      success: true,
-      message: "User credential login successfull",
-      data: loginInfo,
-    });
+      const userTokens = await createUserTokens(user);
+
+      // delete user.toObject().password
+      const { password: pass, ...rest } = user.toObject();
+
+      // Set Access Token or Refresh Token
+      setAuthCookie(res, userTokens);
+
+      sendResponse(res, {
+        statusCode: statusCodes.OK,
+        success: true,
+        message: "User credential login successfull",
+        data: {
+          accessToken: userTokens.accessToken,
+          refreshToken: userTokens.refreshToken,
+          user: rest
+        },
+      });
+    })(req, res, next);
   }
 );
 
-
-// Logout 
+// Logout
 const logOut = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
-
-    res.clearCookie('accessToken', {
+    res.clearCookie("accessToken", {
       httpOnly: true,
       secure: false,
-      sameSite: 'lax'
-    })
+      sameSite: "lax",
+    });
 
-    res.clearCookie('refreshToken', {
+    res.clearCookie("refreshToken", {
       httpOnly: true,
       secure: false,
-      sameSite: 'lax'
-    })
+      sameSite: "lax",
+    });
 
     sendResponse(res, {
       statusCode: statusCodes.OK,
@@ -49,7 +67,6 @@ const logOut = catchAsync(
     });
   }
 );
-
 
 const getNewAccessToken = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
@@ -66,10 +83,9 @@ const getNewAccessToken = catchAsync(
 
     res.cookie("accessToken", tokenInfo.accessToken, {
       httpOnly: true,
-      secure: false
-    })
-    setAuthCookie(res, tokenInfo)
-
+      secure: false,
+    });
+    setAuthCookie(res, tokenInfo);
 
     sendResponse(res, {
       statusCode: statusCodes.OK,
@@ -80,16 +96,18 @@ const getNewAccessToken = catchAsync(
   }
 );
 
-
-
 const resetPassword = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
-    const decodedToken = req.user
-    console.log('dec token from controller', decodedToken)
-    const oldPassword = req.body.oldPassword
-    const newPassword = req.body.newPassword
+    const decodedToken = req.user;
+    console.log("dec token from controller", decodedToken);
+    const oldPassword = req.body.oldPassword;
+    const newPassword = req.body.newPassword;
 
-    const resetPassword = await authServices.resetPassword(oldPassword, newPassword, decodedToken as JwtPayload)
+    const resetPassword = await authServices.resetPassword(
+      oldPassword,
+      newPassword,
+      decodedToken as JwtPayload
+    );
 
     sendResponse(res, {
       statusCode: statusCodes.OK,
@@ -105,14 +123,22 @@ const googleCallback = async (
   res: Response,
   next: NextFunction
 ) => {
+  let redirectTo = req.query.state ? (req.query.state as string) : "";
+
+  if (redirectTo.startsWith("/")) {
+    redirectTo = redirectTo.slice(1);
+  }
+
   const user = req.user;
 
   if (!user) {
     throw new AppError(statusCodes.NOT_FOUND, "User not found");
   }
 
-  const tokenInfo = createUserTokens(user);
-  // const callback = await
+  const tokenInfo = await createUserTokens(user);
+  setAuthCookie(res, tokenInfo);
+
+  res.redirect(`${envVars.FRONT_END_URL}/${redirectTo}`);
 };
 
 export const authControllers = {
@@ -120,5 +146,5 @@ export const authControllers = {
   getNewAccessToken,
   googleCallback,
   logOut,
-  resetPassword
+  resetPassword,
 };
