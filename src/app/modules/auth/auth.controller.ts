@@ -15,14 +15,14 @@ const credentialLogin = catchAsync(
     // const loginInfo = await authServices.credentialLogin(req.body);
     passport.authenticate("local", async (error: any, user: any, info: any) => {
       if (error) {
-        return new AppError(401, error);
+        return next(new AppError(401, error))
       }
 
       if (!user) {
-        return new AppError(401, info.message);
+        return next(new AppError(401, info.message))
       }
 
-      const userTokens = await createUserTokens(user);
+      const userTokens = await createUserTokens(user)
 
       // delete user.toObject().password
       const { password: pass, ...rest } = user.toObject();
