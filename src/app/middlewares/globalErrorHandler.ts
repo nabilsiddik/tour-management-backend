@@ -1,47 +1,12 @@
 import { NextFunction, Request, Response } from "express";
-import statusCode from "http-status-codes";
 import dotenv from "dotenv";
 import AppError from "../errorHelpers/appError";
-import mongoose from "mongoose";
+import { TErrorSources } from "../interfaces/errors.types";
+import { handleDuplicateError } from "../helpers/handleDuplicateError";
+import { handleCastError } from "../helpers/handleCastError";
+import { handleZodError } from "../helpers/handleZodError";
+import { handleValidationError } from "../helpers/handleValidationError";
 dotenv.config();
-
-
-// Simplified error handling functions
-// Handle Duplicate Error function
-const  handleDuplicateError = (error: any) => {
-    const duplicate = error.message.match(/"([^"]*)"/)
-    return {
-        errorStatusCode : 400,
-        errorMessage : `${duplicate[1]} already exist`
-    }
-}
-
-// Handle Cast Error function
-const handleCastError = (error: mongoose.CastError) => {
-    console.log(error)
-    return {
-        errorStatusCode : 400, 
-        errorMessage : "Invalid object id"
-    }
-}
-
-// Handle Zod Error function
-const handleZodError = (error: any, errorSources: any) => {
-    console.log(error)
-
-    error.issues.forEach((issue: any) => {
-        errorSources.push({
-            path: issue.path[issue.path.length - 1],
-            message: issue.message
-        })
-    })
-
-    return {
-        errorStatusCode : 400,
-        errorMessage : "Zod Error",
-    }
-}
-
 
 
 export const globalErrorHandler = (
@@ -50,7 +15,7 @@ export const globalErrorHandler = (
   res: Response,
   next: NextFunction
 ) => {
-  const errorSources: any = [];
+  const errorSources: TErrorSources[] = [];
   let errorStatusCode = 500;
   let errorMessage = `Something went wrong.`;
 
@@ -75,17 +40,15 @@ export const globalErrorHandler = (
     errorStatusCode = zodError.errorStatusCode
     errorMessage = zodError.errorMessage
   }
+
   else if (error.name === "ValidationError") {
-    errorStatusCode = 400;
-    const errors = Object.values(error.errors);
-    errors.forEach((errorObject: any) =>
-      errorSources.push({
-        path: errorObject.path,
-        message: errorObject.message,
-      })
-    );
-    errorMessage = "validation Error";
-  } else if (error instanceof AppError) {
+    const validationError = handleValidationError(error, errorSources)
+
+    errorStatusCode = validationError.errorStatusCode
+    errorMessage = validationError.errorMessage
+  } 
+  
+  else if (error instanceof AppError) {
     errorStatusCode = error.statusCode;
     errorMessage = error.message;
   } else if (error instanceof Error) {
