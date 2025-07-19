@@ -6,6 +6,7 @@ import { handleDuplicateError } from "../helpers/handleDuplicateError";
 import { handleCastError } from "../helpers/handleCastError";
 import { handleZodError } from "../helpers/handleZodError";
 import { handleValidationError } from "../helpers/handleValidationError";
+import { envVars } from "../config/env";
 dotenv.config();
 
 
@@ -15,6 +16,9 @@ export const globalErrorHandler = (
   res: Response,
   next: NextFunction
 ) => {
+  if(envVars.NODE_ENV === 'development'){
+    console.log(error)
+  }
   const errorSources: TErrorSources[] = [];
   let errorStatusCode = 500;
   let errorMessage = `Something went wrong.`;
@@ -58,12 +62,12 @@ export const globalErrorHandler = (
   res.status(errorStatusCode).json({
     success: false,
     message: errorMessage,
-    error: {
+    error: envVars.NODE_ENV === 'development' ? {
       name: error.name,
       message: error.message,
       errorSources,
       issues: error.issues,
-    },
+    } : null,
     stack: process.env.NODE_ENV === "development" ? error.stack : null,
   });
 };
