@@ -1,4 +1,4 @@
-import express, { NextFunction, Request, Response } from "express";
+import express, { Request, Response } from "express";
 export const app = express();
 import cors from 'cors'
 import { router } from "./app/routes";

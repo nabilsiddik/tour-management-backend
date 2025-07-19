@@ -11,12 +11,14 @@ userRouter.post(
   "/register",
   validateRequest(createUserZodSchema),
   userControllers.createUser
-);
+)
+
 userRouter.get(
   "/all-user",
   checkAuth(Role.ADMIN, Role.SUPER_ADMIN),
   userControllers.getAllUsers
-);
+)
+
 userRouter.patch(
   "/:id",
   checkAuth(...Object.values(Role)),
