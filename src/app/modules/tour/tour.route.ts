@@ -16,7 +16,7 @@ tourRouter.post('/create',
 
 // Route to get all the tours
 tourRouter.get('/',
-    checkAuth(...Object.values(Role)), 
+    // checkAuth(...Object.values(Role)), 
     tourControllers.getAllTours
 )
 
@@ -28,5 +28,8 @@ tourRouter.patch(
     validateRequest(updateTourZodSchema),
     tourControllers.updateTour
 );
+
+// Route to delete a tour
+tourRouter.delete("/:id", checkAuth(Role.ADMIN, Role.SUPER_ADMIN), tourControllers.deleteTour);
 
 export default tourRouter

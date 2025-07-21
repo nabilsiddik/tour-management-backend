@@ -1,8 +1,9 @@
 import AppError from "../../errorHelpers/appError";
-import { ITour } from "./tour.interface";
-import { Tour } from "./tour.model";
+import { ITour, ITourType } from "./tour.interface";
+import { Tour, TourType } from "./tour.model";
 import { StatusCodes } from "http-status-codes";
 
+/* -------- All the business logics for tour --------- */
 // Business logics of tour creation
 const createTour = async(payload: ITour) => {
     const existingTour = await Tour.findOne({title: payload.title})
@@ -10,9 +11,7 @@ const createTour = async(payload: ITour) => {
     if(existingTour){
         throw new AppError(StatusCodes.BAD_REQUEST, 'A tour with this title already exists.')
     }
-
     const tour = await Tour.create(payload)
-
     return tour
 }
 
@@ -39,8 +38,61 @@ const updateTour = async (id: string, payload: Partial<ITour>) => {
 };
 
 
+// Business logics to delete a tour
+const deleteTour = async (id: string) => {
+    return await Tour.findByIdAndDelete(id);
+};
+
+
+
+
+/* -------- All the business logics for tour types --------- */
+// Business logics to create a tour type
+const createTourType = async (payload: ITourType) => {
+    const existingTourType = await TourType.findOne({ name: payload.name });
+
+    if (existingTourType) {
+        throw new Error("Tour type already exists.");
+    }
+
+    return await TourType.create({ name });
+}
+
+
+// Business logics to get all tour type
+const getAllTourTypes = async () => {
+    return await TourType.find();
+}
+
+// Business logics to update a tour type
+const updateTourType = async (id: string, payload: ITourType) => {
+    const existingTourType = await TourType.findById(id);
+    if (!existingTourType) {
+        throw new Error("Tour type not found.");
+    }
+
+    const updatedTourType = await TourType.findByIdAndUpdate(id, payload, { new: true });
+    return updatedTourType;
+}
+
+// Business logics to delete a tour type
+const deleteTourType = async (id: string) => {
+    const existingTourType = await TourType.findById(id);
+    if (!existingTourType) {
+        throw new Error("Tour type not found.");
+    }
+
+    return await TourType.findByIdAndDelete(id);
+};
+
+
 export const tourServices = {
     createTour,
     getAllTours,
-    updateTour
+    updateTour,
+    deleteTour,
+    createTourType,
+    getAllTourTypes,
+    updateTourType,
+    deleteTourType
 }

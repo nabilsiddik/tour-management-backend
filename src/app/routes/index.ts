@@ -15,7 +15,7 @@ const moduleRoutes = [
         route: authRouter
     },
     {
-        path: '/division',
+        path: '/tour',
         route: tourRouter
     }
 ]
