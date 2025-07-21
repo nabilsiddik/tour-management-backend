@@ -1,6 +1,7 @@
 import { Types } from "mongoose";
 import z from "zod";
 
+// Zod schema for tour
 export const createTourZodSchema = z.object({
   title: z.string(),
   description: z.string().optional(),
@@ -28,7 +29,7 @@ export const createTourZodSchema = z.object({
   })
 });
 
-
+// zod schema for update tour
 export const updateTourZodSchema = z.object({
   title: z.string().optional(),
   description: z.string().optional(),
@@ -54,4 +55,9 @@ export const updateTourZodSchema = z.object({
   tourType: z.string().refine((val) => Types.ObjectId.isValid(val), {
     message: "Invalid tourType ObjectId"
   })
+});
+
+// zod schema for tour type
+export const createTourTypeZodSchema = z.object({
+    name: z.string(),
 });

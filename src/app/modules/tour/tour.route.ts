@@ -2,11 +2,32 @@ import express from 'express'
 import { checkAuth } from '../../middlewares/checkAuth'
 import { Role } from '../user/user.interface'
 import { validateRequest } from '../../middlewares/validateRequest'
-import { createTourZodSchema, updateTourZodSchema } from './rout.validation'
+import { createTourTypeZodSchema, createTourZodSchema, updateTourZodSchema } from './rout.validation'
 import { tourControllers } from './tour.controller'
 
 const tourRouter = express.Router()
+/* ------------------ TOUR TYPE ROUTES -------------------- */
+tourRouter.get("/tour-types", tourControllers.getAllTourTypes);
 
+tourRouter.post(
+    "/create-tour-type",
+    checkAuth(Role.ADMIN, Role.SUPER_ADMIN),
+    validateRequest(createTourTypeZodSchema),
+    tourControllers.createTourType
+);
+
+tourRouter.patch(
+    "/tour-types/:id",
+    checkAuth(Role.ADMIN, Role.SUPER_ADMIN),
+    validateRequest(createTourTypeZodSchema),
+    tourControllers.updateTourType
+);
+
+tourRouter.delete("/tour-types/:id", checkAuth(Role.ADMIN, Role.SUPER_ADMIN), tourControllers.deleteTourType);
+
+
+
+/* ------- Routers for Tour ----- */
 // Route to create a tour
 tourRouter.post('/create',
     checkAuth(Role.ADMIN, Role.SUPER_ADMIN),
