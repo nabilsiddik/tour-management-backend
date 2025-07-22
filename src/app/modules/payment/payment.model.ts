@@ -31,6 +31,6 @@ const paymentSchema = new Schema<IPayment>({
     versionKey: false
 })
 
-const Booking = model<IPayment>("Payment")
+const Payment = model<IPayment>("Payment", paymentSchema)
 
-export default Booking
+export default Payment

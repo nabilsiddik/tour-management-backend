@@ -15,7 +15,6 @@ const bookingSchema = new Schema<IBooking>({
     payment: {
         type: Schema.Types.ObjectId,
         ref: 'Payment',
-        required: true,
     },
     status: {
         type: String,
@@ -31,6 +30,6 @@ const bookingSchema = new Schema<IBooking>({
     versionKey: false
 })
 
-const Booking = model<IBooking>("Booking")
+const Booking = model<IBooking>("Booking", bookingSchema)
 
 export default Booking
