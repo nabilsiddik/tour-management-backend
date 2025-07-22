@@ -2,7 +2,6 @@ import { IDivision } from "./division.interface";
 import { Division } from "./division.model";
 
 const createDivision = async (payload: IDivision) => {
-
     const existingDivision = await Division.findOne({ name: payload.name });
     if (existingDivision) {
         throw new Error("A division with this name already exists.");
@@ -13,8 +12,9 @@ const createDivision = async (payload: IDivision) => {
     return division
 };
 
+// Services to Get all divisions
 const getAllDivisions = async () => {
-    const divisions = await Division.find({});
+    const divisions = await Division.find();
     const totalDivisions = await Division.countDocuments();
     return {
         data: divisions,

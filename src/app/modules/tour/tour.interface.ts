@@ -1,20 +1,22 @@
 import { Types } from "mongoose";
 
 // Tour Type interface
-export interface ITourType{
+export interface ITourType {
     name: string,
 }
 
 // Tour interface
-export interface ITour{
+export interface ITour {
     title: string,
-    slug: string,
+    slug?: string,
     description?: string,
     images?: string[],
     location?: string,
     costFrom?: number,
     startDate?: Date,
     endDate?: Date,
+    departureLocation?: string,
+    arrivalLocation?: string,
     included?: string[],
     excluded?: string[],
     amenities?: string[],

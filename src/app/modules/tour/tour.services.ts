@@ -1,25 +1,41 @@
+import { excludeFields } from "../../constants";
 import AppError from "../../errorHelpers/appError";
+import { QueryBuilder } from "../../utils/queryBuilder";
+import { tourSearchableFields } from "./tour.constants";
 import { ITour, ITourType } from "./tour.interface";
 import { Tour, TourType } from "./tour.model";
 import { StatusCodes } from "http-status-codes";
 
 /* -------- All the business logics for tour --------- */
 // Business logics of tour creation
-const createTour = async(payload: ITour) => {
-    const existingTour = await Tour.findOne({title: payload.title})
+const createTour = async (payload: ITour) => {
+    const existingTour = await Tour.findOne({ title: payload.title })
 
-    if(existingTour){
+    if (existingTour) {
         throw new AppError(StatusCodes.BAD_REQUEST, 'A tour with this title already exists.')
     }
+
     const tour = await Tour.create(payload)
     return tour
 }
 
 
 // Business logics of getting all the tours
-const getAllTours = async () => {
-    const tours = await Tour.find()
-    return tours
+const getAllTours = async (query: Record<string, string>) => {
+    const queryBuilder = new QueryBuilder(Tour.find(), query)
+
+    const tours = await queryBuilder.search(tourSearchableFields).filter().sort().fields().paginate()
+
+    const [data, meta] = await Promise.all([
+        tours.build(),
+        queryBuilder.getMeta()
+    ])
+
+    return {
+        data,
+        meta
+    }
+
 };
 
 
@@ -55,7 +71,7 @@ const createTourType = async (payload: ITourType) => {
         throw new Error("Tour type already exists.");
     }
 
-    return await TourType.create({ name });
+    return await TourType.create(payload);
 }
 
 

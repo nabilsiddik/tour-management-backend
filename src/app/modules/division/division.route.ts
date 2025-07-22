@@ -5,22 +5,22 @@ import { Role } from "../user/user.interface";
 import { divisionControllers } from "./division.controllers";
 import { createDivisionSchema, updateDivisionSchema } from "./division.validation";
 
-const router = Router()
+const divisionRouter = Router()
 
-router.post(
+divisionRouter.post(
     "/create",
     checkAuth(Role.ADMIN, Role.SUPER_ADMIN),
     validateRequest(createDivisionSchema),
     divisionControllers.createDivision
 );
-router.get("/", divisionControllers.getAllDivisions);
-router.get("/:slug", divisionControllers.getSingleDivision)
-router.patch(
+divisionRouter.get("/", divisionControllers.getAllDivisions);
+divisionRouter.get("/:slug", divisionControllers.getSingleDivision)
+divisionRouter.patch(
     "/:id",
     checkAuth(Role.ADMIN, Role.SUPER_ADMIN),
     validateRequest(updateDivisionSchema),
     divisionControllers.updateDivision
 );
-router.delete("/:id", checkAuth(Role.ADMIN, Role.SUPER_ADMIN), divisionControllers.deleteDivision);
+divisionRouter.delete("/:id", checkAuth(Role.ADMIN, Role.SUPER_ADMIN), divisionControllers.deleteDivision);
 
-export const DivisionRoutes = router
+export default divisionRouter

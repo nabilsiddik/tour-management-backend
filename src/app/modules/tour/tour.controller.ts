@@ -23,14 +23,17 @@ const createTour = catchAsync(
 
 // Controller for Get all tour
 const getAllTours = catchAsync(async (req: Request, res: Response) => {
+  const query = req.query
+
 // Business logics of getting all tours from tourServices
-  const toursData = await tourServices.getAllTours();
+  const toursData = await tourServices.getAllTours(query as Record<string, string>);
 
   sendResponse(res, {
     statusCode: 201,
     success: true,
     message: "Tours retrieved successfully",
-    data: toursData,
+    data: toursData.data,
+    meta: toursData.meta
   });
 });
 
@@ -83,8 +86,7 @@ const getAllTourTypes = catchAsync(async (req: Request, res: Response) => {
 
 // Controller to create a tour types
 const createTourType = catchAsync(async (req: Request, res: Response) => {
-    const { name } = req.body;
-    const result = await tourServices.createTourType(name);
+    const result = await tourServices.createTourType(req.body);
     sendResponse(res, {
         statusCode: 201,
         success: true,

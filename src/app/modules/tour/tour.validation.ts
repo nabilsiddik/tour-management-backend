@@ -26,7 +26,9 @@ export const createTourZodSchema = z.object({
   }),
   tourType: z.string().refine((val) => Types.ObjectId.isValid(val), {
     message: "Invalid tourType ObjectId"
-  })
+  }),
+  departureLocation: z.string().optional(),
+  arivalLocation: z.string().optional()
 });
 
 // zod schema for update tour
@@ -51,10 +53,12 @@ export const updateTourZodSchema = z.object({
   minAge: z.number().optional(),
   division: z.string().refine((val) => Types.ObjectId.isValid(val), {
     message: "Invalid division ObjectId",
-  }),
+  }).optional(),
   tourType: z.string().refine((val) => Types.ObjectId.isValid(val), {
     message: "Invalid tourType ObjectId"
-  })
+  }).optional(),
+  departureLocation: z.string().optional(),
+  arivalLocation: z.string().optional()
 });
 
 // zod schema for tour type

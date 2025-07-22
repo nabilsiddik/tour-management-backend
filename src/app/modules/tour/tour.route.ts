@@ -2,7 +2,7 @@ import express from 'express'
 import { checkAuth } from '../../middlewares/checkAuth'
 import { Role } from '../user/user.interface'
 import { validateRequest } from '../../middlewares/validateRequest'
-import { createTourTypeZodSchema, createTourZodSchema, updateTourZodSchema } from './rout.validation'
+import { createTourTypeZodSchema, createTourZodSchema, updateTourZodSchema } from './tour.validation'
 import { tourControllers } from './tour.controller'
 
 const tourRouter = express.Router()
