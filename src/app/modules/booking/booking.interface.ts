@@ -3,7 +3,7 @@ import { Types } from "mongoose";
 export enum BOOKING_STATUS {
     PENDING = 'PENDING',
     CANCLED = 'CANCLED',
-    PAID = 'PAID',
+    COMPLETED = 'COMPLETED',
     FAILED = 'FAILED'
 }
 

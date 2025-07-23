@@ -6,6 +6,8 @@ import Booking from "./booking.model"
 import Payment from "../payment/payment.model"
 import { PAYPMENT_STATUS } from "../payment/payment.interface"
 import { Tour } from "../tour/tour.model"
+import { ISSLCommerz } from "../sslCommerz/sslCommerz.interface"
+import { SSLService } from "../sslCommerz/sslCommerz.service"
 
 
 const getTransactionId = () => {
@@ -62,9 +64,33 @@ const createBooking = async (payload: Partial<IBooking>, userId: string) => {
             .populate('tour', 'title costfrom')
             .populate('payment')
 
+        // Initialize SSL Payment
+        const userAddress = (updatedBooking?.user as any).address
+        const userEmail = (updatedBooking?.user as any).email
+        const userName = (updatedBooking?.user as any).name
+        const userPhone = (updatedBooking?.user as any).phone
+
+        const sslPayload: ISSLCommerz = {
+            name: userName,
+            email: userEmail,
+            address: userAddress,
+            phone: userPhone,
+            amount,
+            transactionId
+        }
+
+        console.log(sslPayload)
+
+        const sslPayment = await SSLService.sslPaymentInit(sslPayload)
+        // console.log(sslPayment)
+
+        // Commit transaction if everything ok
         await session.commitTransaction()
         session.endSession()
-        return updatedBooking
+        return {
+            booking: updatedBooking,
+            paymentUrl: sslPayment.GatewayPageURL
+        }
 
     } catch (error: any) {
         await session.abortTransaction()
