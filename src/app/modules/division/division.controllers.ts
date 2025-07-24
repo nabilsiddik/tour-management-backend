@@ -45,6 +45,10 @@ const getSingleDivision = catchAsync(async (req: Request, res: Response) => {
 const updateDivision = catchAsync(async (req: Request, res: Response) => {
     const id = req.params.id;
 
+    if(req.file){
+        req.body.thumbnail = req.file.path
+    }
+
     const result = await divisionServices.updateDivision(id, req.body);
     sendResponse(res, {
         statusCode: 200,
