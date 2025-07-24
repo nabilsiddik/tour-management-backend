@@ -10,7 +10,7 @@ import { Tour } from "./tour.model";
 const createTour = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
 
-    // Uploading multiple files for tour
+    // Sending tour pictures along with other req.body elements
     const payload: ITour = {
       ...req.body,
       images: (req.files as Express.Multer.File[]).map(file =>  file.path)
@@ -46,7 +46,12 @@ const getAllTours = catchAsync(async (req: Request, res: Response) => {
 // Controller for update a tour
 const updateTour = catchAsync(async (req: Request, res: Response) => {
   const id = req.params.id
-  const payload = req.body
+
+  // Sending tour pictures along with other req.body elements while updating tour
+   const payload: ITour = {
+      ...req.body,
+      images: (req.files as Express.Multer.File[]).map(file =>  file.path)
+    }
 
   const updatedTour = await tourServices.updateTour(id, payload)
 

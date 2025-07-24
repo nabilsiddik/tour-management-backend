@@ -58,7 +58,8 @@ export const updateTourZodSchema = z.object({
     message: "Invalid tourType ObjectId"
   }).optional(),
   departureLocation: z.string().optional(),
-  arivalLocation: z.string().optional()
+  arivalLocation: z.string().optional(),
+  deleteImages: z.array(z.string()).optional()
 });
 
 // zod schema for tour type
