@@ -10,6 +10,7 @@ import cookieParser from "cookie-parser";
 import "./app/config/passport"
 
 app.use(express.json())
+app.use(express.urlencoded({extended: true}))
 app.use(cors())
 app.use(cookieParser())
 app.use(expressSession({

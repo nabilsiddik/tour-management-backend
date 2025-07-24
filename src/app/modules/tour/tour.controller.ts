@@ -9,8 +9,13 @@ import { Tour } from "./tour.model";
 // Controller for Create a tour
 const createTour = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
-    // Business logics of tour creation from tourServices
-    const tourData = await tourServices.createTour(req.body);
+    // Uploading multiple files for tour
+    const payload: ITour = {
+      ...req.body,
+      images: (req.files as Express.Multer.File[]).map(file =>  file.path)
+    }
+
+    const tourData = await tourServices.createTour(payload);
 
     sendResponse(res, {
       statusCode: 201,
@@ -25,7 +30,6 @@ const createTour = catchAsync(
 const getAllTours = catchAsync(async (req: Request, res: Response) => {
   const query = req.query
 
-// Business logics of getting all tours from tourServices
   const toursData = await tourServices.getAllTours(query as Record<string, string>);
 
   sendResponse(res, {
@@ -43,7 +47,6 @@ const updateTour = catchAsync(async (req: Request, res: Response) => {
   const id = req.params.id
   const payload = req.body
 
-  // Business logics of update tour from tourServices
   const updatedTour = await tourServices.updateTour(id, payload)
 
   sendResponse(res, {

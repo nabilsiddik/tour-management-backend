@@ -4,6 +4,7 @@ import { Role } from '../user/user.interface'
 import { validateRequest } from '../../middlewares/validateRequest'
 import { createTourTypeZodSchema, createTourZodSchema, updateTourZodSchema } from './tour.validation'
 import { tourControllers } from './tour.controller'
+import { multerUpload } from '../../config/multer.config'
 
 const tourRouter = express.Router()
 /* ------------------ TOUR TYPE ROUTES -------------------- */
@@ -31,6 +32,7 @@ tourRouter.delete("/tour-types/:id", checkAuth(Role.ADMIN, Role.SUPER_ADMIN), to
 // Route to create a tour
 tourRouter.post('/create',
     checkAuth(Role.ADMIN, Role.SUPER_ADMIN),
+    multerUpload.array('files'),
     validateRequest(createTourZodSchema),
     tourControllers.createTour
 )
