@@ -7,10 +7,11 @@ import { handleCastError } from "../helpers/handleCastError";
 import { handleZodError } from "../helpers/handleZodError";
 import { handleValidationError } from "../helpers/handleValidationError";
 import { envVars } from "../config/env";
+import { deleteImageFromCloudinary } from "../config/cloudinary.config";
 dotenv.config();
 
 
-export const globalErrorHandler = (
+export const globalErrorHandler = async(
   error: any,
   req: Request,
   res: Response,
@@ -19,6 +20,19 @@ export const globalErrorHandler = (
   if(envVars.NODE_ENV === 'development'){
     console.log(error)
   }
+
+  // Delete single unncessary file from cloudinary
+  if(req.file){
+    await deleteImageFromCloudinary(req.file.path)
+  }
+
+  // Delete multiple unncessary file from cloudinary
+  if(req.files && Array.isArray(req.files) && req.files.length){
+    const imageUrls = (req.files as Express.Multer.File[]).map(file => file.path)
+
+    await Promise.all(imageUrls.map(url => deleteImageFromCloudinary(url)))
+  }
+
   const errorSources: TErrorSources[] = [];
   let errorStatusCode = 500;
   let errorMessage = `Something went wrong.`;

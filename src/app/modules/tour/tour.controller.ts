@@ -9,6 +9,7 @@ import { Tour } from "./tour.model";
 // Controller for Create a tour
 const createTour = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
+
     // Uploading multiple files for tour
     const payload: ITour = {
       ...req.body,
