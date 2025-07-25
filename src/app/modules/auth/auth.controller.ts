@@ -101,13 +101,9 @@ const getNewAccessToken = catchAsync(
 const resetPassword = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const decodedToken = req.user;
-    console.log("dec token from controller", decodedToken);
-    const oldPassword = req.body.oldPassword;
-    const newPassword = req.body.newPassword;
 
     const resetPassword = await authServices.resetPassword(
-      oldPassword,
-      newPassword,
+      req.body,
       decodedToken as JwtPayload
     );
 
@@ -130,7 +126,7 @@ const changePassword = catchAsync(
     const oldPassword = req.body.oldPassword;
     const newPassword = req.body.newPassword;
 
-    const resetPassword = await authServices.resetPassword(
+    const resetPassword = await authServices.changePassword(
       oldPassword,
       newPassword,
       decodedToken as JwtPayload
@@ -152,7 +148,7 @@ const setPassword = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const decodedToken = req.user as JwtPayload;
     console.log("dec token from controller", decodedToken);
-    const {password} = req.body;
+    const { password } = req.body;
 
     const setPassword = await authServices.setPassword(decodedToken.userId, password);
 
@@ -169,16 +165,14 @@ const setPassword = catchAsync(
 // Forgot password
 const forgotPassword = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
-    const decodedToken = req.user as JwtPayload;
-    console.log("dec token from controller", decodedToken);
-    const {password} = req.body;
 
-    const setPassword = await authServices.setPassword(decodedToken.userId, password);
+    const { email } = req.body
+    await authServices.forgotPassword(email)
 
     sendResponse(res, {
       statusCode: statusCodes.OK,
       success: true,
-      message: "Password Seted Successfully",
+      message: "Email sent Successfully",
       data: setPassword,
     });
   }
