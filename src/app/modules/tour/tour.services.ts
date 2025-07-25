@@ -63,7 +63,7 @@ const updateTour = async (id: string, payload: Partial<ITour>) => {
         .filter(imageUrl => !payload.deleteImages?.includes(imageUrl))
         .filter(imageUrl => !restDBImages.includes(imageUrl))
 
-        payload.images = [...restDBImages, ...(payload.images || [])]
+        payload.images = [...restDBImages, ...updatedPayloadImages]
     }
     
     const updatedTour = await Tour.findByIdAndUpdate(id, payload, { new: true });

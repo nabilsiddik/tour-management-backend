@@ -3,7 +3,7 @@ import { IAuthProvider, IsActive, IUser, Role } from "./user.interface";
 import User from "./user.model";
 import AppError from "../../errorHelpers/appError";
 import bycrypt from "bcryptjs";
-import { JwtPayload } from "jsonwebtoken";
+import { decode, JwtPayload } from "jsonwebtoken";
 import statusCodes from "http-status-codes";
 import { envVars } from "../../config/env";
 
@@ -45,6 +45,33 @@ const getAllUsers = async () => {
     },
   };
 };
+
+
+
+// Get me
+const getMe = async (decodedToken: JwtPayload) => {
+  const userId = decodedToken?.userId
+
+  if(!userId){
+    throw new AppError(statusCodes.BAD_REQUEST, 'User does not exist while getting self information.')
+  }
+
+  const user = await User.findById(userId).select('-password');
+
+  return user
+};
+
+
+// Get SingleUser
+const getSingleUser = async (userId: string) => {
+  if(!userId){
+    throw new AppError(statusCodes.BAD_REQUEST, 'User does not exist white getting single user.')
+  }
+  const user = await User.findById(userId).select('-password');
+  return user
+};
+
+
 
 // Update user
 const updateUser = async (
@@ -112,4 +139,6 @@ export const userServices = {
   createUser,
   getAllUsers,
   updateUser,
+  getMe,
+  getSingleUser
 };

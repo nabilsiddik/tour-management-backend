@@ -16,6 +16,7 @@ export const catchAsync = (fn: AsyncHandler) => (req: Request, res: Response, ne
   })
 }
 
+// Create an user
 const createUser = catchAsync(async(req: Request, res: Response, next: NextFunction)=> {
   const user = await userServices.createUser(req.body);
 
@@ -27,6 +28,7 @@ const createUser = catchAsync(async(req: Request, res: Response, next: NextFunct
     })
 })
 
+// Get all users
 const getAllUsers = catchAsync(async(req: Request, res: Response, next: NextFunction) => {
     const result = await userServices.getAllUsers()
 
@@ -39,6 +41,36 @@ const getAllUsers = catchAsync(async(req: Request, res: Response, next: NextFunc
     })
 })
 
+
+// Get single User
+const getSingleUser = catchAsync(async(req: Request, res: Response, next: NextFunction) => {
+    const userId = req.params.id
+    const user = await userServices.getSingleUser(userId)
+
+    sendResponse(res, {
+      statusCode: statusCode.CREATED,
+      success: true,
+      message: 'Single User retrive successfully',
+      data: user
+    })
+})
+
+
+
+// Get me
+const getMe = catchAsync(async(req: Request, res: Response, next: NextFunction) => {
+    const decodedToken = req.user as JwtPayload
+    const user = await userServices.getMe(decodedToken)
+
+    sendResponse(res, {
+      statusCode: statusCode.CREATED,
+      success: true,
+      message: 'Current User retrive successfully',
+      data: user
+    })
+})
+
+// Update user
 const updateUser = catchAsync(async(req: Request, res: Response, next: NextFunction)=> {
 
   const userId = req.params.id
@@ -61,5 +93,7 @@ const updateUser = catchAsync(async(req: Request, res: Response, next: NextFunct
 export const userControllers = {
   createUser,
   getAllUsers,
-  updateUser
+  updateUser,
+  getMe,
+  getSingleUser
 };
