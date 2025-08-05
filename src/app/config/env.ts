@@ -40,11 +40,17 @@ interface EnvConfig {
         SMTP_USER: string,
         SMTP_FROM: string,
         SMTP_PASS: string,
+    },
+    REDIS: {
+        REDIS_HOST: string,
+        REDIS_PORT: string,
+        REDIS_USERNAME: string,
+        REDIS_PASSWORD: string,
     }
 }
 
 const loadEnvVariables = (): EnvConfig => {
-    const requiredEnvVariables: string[] = ['PORT', 'MONGODB_URL', 'NODE_ENV', 'SUPER_ADMIN_EMAIL', 'SUPER_ADMIN_PASSWORD', 'JWT_REFRESH_SECRET', 'JWT_REFRESH_EXPIRES', 'GOOGLE_CLIENT_ID', 'GOOGLE_CLIENT_SECRET', 'EXPRESS_SESSION_SECRET', 'GOOGLE_CALLBACK_URL', 'FRONT_END_URL', 'SSL_STORE_ID', 'SSL_STORE_PASS', 'SSL_PAYMENT_API', 'SSL_VALIDATION_API', 'SSL_SUCCESS_BACKEND_URL', 'SSL_FAIL_BACKEND_URL', 'SSL_CANCLE_BACKEND_URL', 'SSL_SUCCESS_FRONTEND_URL', 'SSL_FAIL_FRONTEND_URL', 'SSL_CANCLE_FRONTEND_URL', 'CLOUDINARY_CLOUD_NAME', 'CLOUDINARY_API_KEY', 'CLOUDINARY_API_SECRET', 'SMTP_HOST', 'SMTP_PORT', 'SMTP_USER', 'SMTP_FROM', 'SMTP_PASS']
+    const requiredEnvVariables: string[] = ['PORT', 'MONGODB_URL', 'NODE_ENV', 'SUPER_ADMIN_EMAIL', 'SUPER_ADMIN_PASSWORD', 'JWT_REFRESH_SECRET', 'JWT_REFRESH_EXPIRES', 'GOOGLE_CLIENT_ID', 'GOOGLE_CLIENT_SECRET', 'EXPRESS_SESSION_SECRET', 'GOOGLE_CALLBACK_URL', 'FRONT_END_URL', 'SSL_STORE_ID', 'SSL_STORE_PASS', 'SSL_PAYMENT_API', 'SSL_VALIDATION_API', 'SSL_SUCCESS_BACKEND_URL', 'SSL_FAIL_BACKEND_URL', 'SSL_CANCLE_BACKEND_URL', 'SSL_SUCCESS_FRONTEND_URL', 'SSL_FAIL_FRONTEND_URL', 'SSL_CANCLE_FRONTEND_URL', 'CLOUDINARY_CLOUD_NAME', 'CLOUDINARY_API_KEY', 'CLOUDINARY_API_SECRET', 'SMTP_HOST', 'SMTP_PORT', 'SMTP_USER', 'SMTP_FROM', 'SMTP_PASS', 'REDIS_HOST', 'REDIS_PORT', 'REDIS_USERNAME', 'REDIS_PASSWORD']
 
     requiredEnvVariables.forEach(key => {
         if (!process.env[key]) {
@@ -93,8 +99,13 @@ const loadEnvVariables = (): EnvConfig => {
             SMTP_USER: process.env.SMTP_USER as string,
             SMTP_FROM: process.env.SMTP_FROM as string,
             SMTP_PASS: process.env.SMTP_PASS as string,
+        },
+        REDIS: {
+            REDIS_HOST: process.env.REDIS_HOST as string,
+            REDIS_PORT: process.env.REDIS_PORT as string,
+            REDIS_USERNAME: process.env.REDIS_USERNAME as string,
+            REDIS_PASSWORD: process.env.REDIS_PASSWORD as string,
         }
-
     };
 }
 

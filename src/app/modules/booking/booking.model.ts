@@ -4,7 +4,7 @@ import { BOOKING_STATUS, IBooking } from "./booking.interface";
 const bookingSchema = new Schema<IBooking>({
     user: {
         type: Schema.Types.ObjectId,
-        ref: 'user',
+        ref: 'User',
         required: true,
     },
     tour: {

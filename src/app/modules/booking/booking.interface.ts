@@ -1,4 +1,7 @@
 import { Types } from "mongoose";
+import { ITour } from "../tour/tour.interface";
+import { IUser } from "../user/user.interface";
+import { IPayment } from "../payment/payment.interface";
 
 export enum BOOKING_STATUS {
     PENDING = 'PENDING',
@@ -13,4 +16,5 @@ export interface IBooking{
     payment?: Types.ObjectId,
     guestCount: number,
     status: BOOKING_STATUS,
+    createdAt: Date
 }

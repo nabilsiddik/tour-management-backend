@@ -11,7 +11,6 @@ import { SSLService } from "../sslCommerz/sslCommerz.service"
 import { getTransactionId } from "../../utils/getTransactionId"
 
 
-
 const createBooking = async (payload: Partial<IBooking>, userId: string) => {
 
     // Generate transaction id

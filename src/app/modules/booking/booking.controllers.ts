@@ -6,6 +6,7 @@ import { BookingServices } from "./booking.services";
 
 
 const createBooking = catchAsync(async (req: Request, res: Response) => {
+    console.log(req.body)
     const decodeToken = req.user as JwtPayload
     const booking = await BookingServices.createBooking(req.body, decodeToken.userId);
 

@@ -7,6 +7,10 @@ import AppError from "../../errorHelpers/appError"
 import { StatusCodes } from "http-status-codes"
 import { ISSLCommerz } from "../sslCommerz/sslCommerz.interface"
 import { SSLService } from "../sslCommerz/sslCommerz.service"
+import { generatePDF, IInvoiceData } from "../../utils/invoice"
+import { ITour } from "../tour/tour.interface"
+import { IUser } from "../user/user.interface"
+import { sendEmail } from "../../utils/sendEmaill"
 
 
 // Init payment business logics
@@ -55,10 +59,50 @@ const successPayment = async (query: Record<string, string>) => {
         status: PAYPMENT_STATUS.PAID
     }, { session })
 
+    if(!updatedPayment){
+        throw new AppError(StatusCodes.NOT_FOUND, 'Updated Payment not found.')
+    }
+
     // Update Booking status to Confirmed
-    await Booking.findByIdAndUpdate(updatedPayment?.booking, {
+    const updatedBooking = await Booking.findByIdAndUpdate(updatedPayment?.booking, {
         status: BOOKING_STATUS.COMPLETED
-    }, { session })
+    }, {new: true, runValidators: true, session })
+    .populate('tour', 'title')
+    .populate('user', 'name email')
+
+    if(!updatedBooking){
+        throw new AppError(StatusCodes.NOT_FOUND, 'Updated Booking not found.')
+    }
+
+    // Invoice data
+    const invoiceData: IInvoiceData = {
+        bookingDate: updatedBooking?.createdAt as Date,
+        guestCount: updatedBooking?.guestCount,
+        totalAmount: updatedPayment?.amount,
+        tourTitle: (updatedBooking?.tour as unknown as ITour).title,
+        transactionId: updatedPayment?.transactionId,
+        userName: (updatedBooking?.user as unknown as IUser).name
+    }
+
+    console.log(invoiceData)
+
+    // Generate pdf
+    const pdfBuffer = await generatePDF(invoiceData)
+
+    // Send generated pdf to email
+    await sendEmail({
+        to: (updatedBooking?.user as unknown as IUser).email,
+        subject: 'Your Booking Invoice',
+        templateName: 'invoice',
+        templateData: invoiceData,
+        attachments: [
+            {
+                fileName: 'invoice.pdf',
+                content: pdfBuffer,
+                contentType: "application/pdf"
+            }
+        ]
+    })
 
     // Commit transaction
     await session.commitTransaction()
