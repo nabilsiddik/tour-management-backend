@@ -8,10 +8,14 @@ import passport from "passport";
 import expressSession from "express-session"
 import cookieParser from "cookie-parser";
 import "./app/config/passport"
+import { envVars } from "./app/config/env";
 
 app.use(express.json())
 app.use(express.urlencoded({extended: true}))
-app.use(cors())
+app.use(cors({
+    origin: envVars.FRONT_END_URL,
+    credentials: true
+}))
 app.use(cookieParser())
 app.use(expressSession({
     secret: 'your secret',

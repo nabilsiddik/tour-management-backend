@@ -26,11 +26,16 @@ passport.use(
           return done(null, false, { message: "user does not exist" });
         }
 
+        // Check if user is verified
+        if (!existingUser.isVerified) {
+          return done("User is not verified")
+        }
+
         // check if the user is google authenticated user
         const isGoogleAuthenticated = existingUser.auths?.some(providerObject => providerObject.provider === 'google')
 
-        if(isGoogleAuthenticated && !existingUser.password){
-            return done('You have authenticated through google. If you want to login with credential, then first login with google and then set a password. Then you can login with credential.')
+        if (isGoogleAuthenticated && !existingUser.password) {
+          return done('You have authenticated through google. If you want to login with credential, then first login with google and then set a password. Then you can login with credential.')
         }
 
         const isPasswordMatchd = await bcrypt.compare(
@@ -39,11 +44,11 @@ passport.use(
         );
 
         if (!isPasswordMatchd) {
-          return done(null, false, {message: 'password is not valid'})
+          return done(null, false, { message: 'password is not valid' })
         }
 
         return done(null, existingUser)
- 
+
       } catch (error: any) {
         console.log(error);
         done(error);

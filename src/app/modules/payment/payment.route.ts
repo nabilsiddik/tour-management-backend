@@ -7,5 +7,6 @@ paymentRouter.post('/success', PaymentControllers.successPayment)
 paymentRouter.post('/fail', PaymentControllers.failedPayment)
 paymentRouter.post('/cancle', PaymentControllers.cancledPaymetn)
 paymentRouter.post('/init-payment/:bookingId', PaymentControllers.initPayment)
+paymentRouter.get('/invoice/:paymentId', PaymentControllers.getInvoiceDownloadUrl)
 
 export default paymentRouter
